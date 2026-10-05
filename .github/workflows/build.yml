@@ -1,4 +1,4 @@
-name: Build and Verify
+name: Gradle Build
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -20,17 +20,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-          cache: maven
+          cache: gradle
 
-      - name: Build and run quality gates
-        run: ./mvnw -B clean verify
+      - name: Build
+        run: ./gradlew clean build
 
-      - name: Upload build evidence
+      - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: fleetcheck-build
-          path: |
-            target/*-all.jar
-            target/site/jacoco/**
-            target/bom.json
-          if-no-files-found: error
+          name: fleetcheck-gradle-build
+          path: build/libs/*.jar
